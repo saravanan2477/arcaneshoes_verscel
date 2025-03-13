@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>coupon Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- DataTable HEADER-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+        }
+        
+        .sidebar h2 {
+            color: #fff;
+            text-align: center;
+        }
+        
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .sidebar ul li {
+            padding: 15px;
+        }
+        
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .sidebar ul li a:hover {
+            color: #ccc;
+        }
+        
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+        }
+        
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .user-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .user-item button {
+            cursor: pointer;
+        }
+        
+        /* Styling for table headings */
+        #categoryTable thead th {
+            background-color: #007bff; /* Blue */
+            color: #ffffff; /* White */
+        }
+      
+
+
+        .delete-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #ff0000; /* Red color for delete button, you can change it to your desired color */
+        color: #fff; /* Text color for the button */
+        text-decoration: none; /* Remove underline from the link */
+        border-radius: 4px; /* Optional: Adds rounded corners */
+    }
+
+    .delete-button:hover {
+        background-color: #cc0000; /* Darker red color on hover */
+    }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="/admin/dashboard">Dashboard</a></li>  
+            <li><a href="/admin/userManagement">User Management</a></li>
+            <li><a href="/admin/categoryManagement">Category Management</a></li>
+            <li><a href="/productManagement">Product Management</a></li>
+            <li><a href="/admin/orderManagement">Order Management</a></li>
+            <li><a href="/couponManagement">Coupon Management</a></li>
+            <li><a href="/sales">Sales</a></li>
+          <li><a href="/offerManagement">Offer Management</a></li>
+          <li><a href="/admin/Logoutget" id="logout-button">Logout</a></li>
+
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1 style="text-align: center;">Coupon Management</h1>
+       <br>
+        <a href="/addCoupon" class="btn btn-primary" id="addCouponButton">Add Coupon</a>
+
+        <br>   
+        <table id="example" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+            <th style="background-color:#3da3f6">No</th>
+            <th style="background-color:#3da3f6">Coupon Code</th>
+           
+            <th style="background-color:#3da3f6">Discount</th>
+            <th style="background-color:#3da3f6">Expire Date</th>
+            <th style="background-color:#3da3f6">Purchase Amount</th>
+            <th style="background-color:#3da3f6">Actiont</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% coupondata.forEach((val, index)=> { %>
+          <tr>
+            <td><%=index +1%></td>
+            <td><%= val.coupencode %></td>
+           
+            <td><%= val.discount %>%</td>
+           <td>
+  <% 
+    let expireDateObj = new Date(val.expiredate);
+    let options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    let formattedDate = expireDateObj.toLocaleDateString('en-US', options);
+  %>
+  <%= formattedDate %>
+</td>
+
+              
+            <td><%= val.purchaseamount %></td>
+            <td>
+              <a href="/deletecoupon/<%=val.id %>"  class="btn bg-gradient-primary mb-0 delete-button" data-product-id="<%=val.id %>" style="background-color: rgb(228, 29, 29); color: white;">Delete</a>
+            </td>
+          </tr>
+          
+          <% }) %>
+        </tbody>
+      </table>   
+
+</div>
+  
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>
+<script>
+  new DataTable('#example');
+
+</script>  
+
+<script>
+    // Wait for the document to be fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        // Find all elements with the class 'delete-button'
+        const deleteButtons = document.querySelectorAll(".delete-button");
+    
+        // Loop through each delete button
+        deleteButtons.forEach(button => {
+            // Add a click event listener to each delete button
+            button.addEventListener("click", function (e) {
+                // Prevent the default action (following the link)
+                e.preventDefault();
+    
+                // Get the product ID from the data attribute
+                const productId = this.getAttribute("data-product-id");
+    
+                // Show the SweetAlert confirmation dialog
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you really want to delete this product?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete",
+                    cancelButtonText: "No, cancel"
+                }).then((result) => {
+                    // If the user confirms the deletion
+                    if (result.isConfirmed) {
+                        // Redirect to the delete product page with the product ID
+                        window.location.href = "/deletecoupon/" + productId;
+                    }
+                });
+            });
+        });
+    });
+    </script>
+      <script>
+        // Example list of existing coupon codes for demonstration purposes
+        const existingCoupons = ['SAVE10', 'DISCOUNT20', 'WELCOME50', '1111'];
+    
+        document.getElementById('backButton').addEventListener('click', function() {
+          window.history.back();
+        });
+    
+        function submitCoupon() {
+          var couponCode = document.getElementById("couponCode").value.trim();
+          var discount = document.getElementById("discount").value.trim();
+          var expiredate = document.getElementById("expiredate").value.trim();
+          var purchaseamount = document.getElementById("purchaseamount").value.trim();
+    
+          if (!couponCode || !discount || !expiredate || !purchaseamount) {
+            alert("Please fill in all fields.");
+            return false;
+          }
+    
+          if (/^\s*$/.test(couponCode)) {
+            alert("Coupon code cannot be empty or whitespace only.");
+            return false;
+          }
+    
+          if (isNaN(discount) || isNaN(purchaseamount)) {
+            alert("Discount and Purchase Amount must be numeric values.");
+            return false;
+          }
+    
+          var discountValue = parseFloat(discount);
+          var purchaseamountValue = parseFloat(purchaseamount);
+    
+          if (discountValue < 1 || discountValue > 100) {
+            alert("Discount must be between 1% and 100%.");
+            return false;
+          }
+    
+          if (purchaseamountValue <= 0) {
+            alert("Purchase Amount must be greater than 0.");
+            return false;
+          }
+    
+          // Check if coupon code already exists (case-insensitive)
+          var couponCodeLower = couponCode.toLowerCase();
+          var exists = existingCoupons.some(function(code) {
+            return code.toLowerCase() === couponCodeLower;
+          });
+    
+          if (exists) {
+            alert("Coupon code already exists.");
+            return false;
+          }
+    
+          alert('Coupon submitted!');
+          return true;
+        }
+      </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    
+            // Wait for the document to be fully loaded
+            document.addEventListener("DOMContentLoaded", function () {
+                // Find the logout button element
+                const logoutButton = document.getElementById("logout-button");
+            
+                // Add a click event listener to the logout button
+                logoutButton.addEventListener("click", function (e) {
+                    // Prevent the default action (following the link)
+                    e.preventDefault();
+            
+                    // Show the SweetAlert confirmation dialog
+                    Swal.fire({
+                        title: "Logout",
+                        text: "Are you sure you want to logout?",
+                        icon: "warning",
+                        showCancelButton: true, 
+                        confirmButtonText: "Yes, logout",
+                        cancelButtonText: "No, cancel"
+                    }).then((result) => {
+                        // If the user confirms the logout
+                        if (result.isConfirmed) {
+                            // Redirect to the logout page
+                            window.location.href = "/admin/Logoutget";
+                        }
+                    });
+                });
+            });
+            
+</script>
+</body>
+</html>

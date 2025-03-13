@@ -1,0 +1,588 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="Untree.co">
+	<link rel="shortcut icon" href="favicon.png">
+
+	<meta name="description" content="" />
+	<meta name="keywords" content="bootstrap, bootstrap4" />
+
+
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha384-xrR5NqgeqD3Pbe5VZjOxwzrqMCr2w8P1b8r9z6p+8RbGpK3b5k9Rv9Im9Z9R/2c+" crossorigin="anonymous">
+
+
+
+	<!-- Include jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link href="css/tiny-slider.css" rel="stylesheet">
+	
+
+	<title>Checkout </title>
+	<style>
+.col-md-6{
+	flex: 0 0 47%;
+    max-width: 47%;
+}
+
+#placeOrderButton {
+    display: inline-block;
+    background: #ff523b;
+    color: #fff;
+    padding: 6px 5px;
+    margin: 0px -5px;
+    border-radius: 20px;
+    transition: background 0.5s;
+}
+
+#rzp-button1{
+	
+	display: inline-block;
+    background: #ff523b;
+    color: #fff;
+    padding: 6px 5px;
+    margin: 0px -5px;
+    border-radius: 20px;
+    transition: background 0.5s;
+}
+
+
+
+.coupon-container {
+    border: 1px solid #ff523b;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.coupon-content {
+    margin-bottom: 20px;
+}
+
+.coupon-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.coupon-label {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.coupon-input-section {
+    margin-top: 20px;
+}
+
+.coupon-input-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.coupon-input-box {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.coupon-input {
+    width: 100%;
+}
+
+.coupon-btn {
+    width: auto;
+}
+
+.coupon-message {
+    margin-top: 10px;
+}
+
+.coupon-discount,
+.coupon-price {
+    margin-top: 10px;
+}
+
+.coupon-remove-btn,
+.coupon-available-btn {
+    margin-top: 20px;
+}
+
+
+.coupon-values{
+	margin-top: 50px;
+}
+
+#deleteCouponBtn{
+	margin-top: -40px;
+}
+#availableCouponsButton{
+	margin-top: -40px;
+}
+
+	</style>
+</head>
+
+<body>
+
+<%- include('sidenav') %>
+	
+	<!-- Start Hero Section -->
+	
+	<!-- End Hero Section -->
+		<div class="hero ">
+			<div class="container ">
+				<div class="row justify-content-between ">
+					<div class="col-lg-5 h-60">
+						<div class="intro-excerpt">
+							<br>
+							<h1>Checkout</h1>
+						</div>
+					</div>
+					<div class="col-lg-7">
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Hero Section -->
+
+		<div class="untree_co-section  ">
+			<div class="container ">
+
+				<div class="row ">
+					<div class="col-md-6 mb-5 mb-md-0  ">
+						<h2 class="h3 mb-3 text-black">Billing Details</h2>
+						<div class="p-3 p-lg-5" style="background-color: #ffffff; border: 1px solid rgb(255, 144, 16);">
+							<!-- billing checkout -->
+
+							<div class="payment__info">
+								<div class="payment__cc">
+									<div class="payment__title personal-info">
+										<i class="icon icon-user"></i>Personal Information
+									</div>
+									<form action="/Checkoutpost" method="POST">
+										<% if (address && Array.isArray(address) && address.length> 0) { %>
+											<div class="payment__shipping">
+												<% address.forEach((product, index)=> { %>
+
+													<div class="details__user">
+														<div class="user__name">
+															<%= product.firstname %>
+																<%= product.lastname %>
+														</div>
+														<div class="user__address">Shipping Address: <%= product.address %>,
+																<%= product.city %>
+														</div>
+
+														<!-- Radio button for shipping option -->
+														<div class="shipping__option">
+															<input type="radio" id="shippingOption" name="shippingOption"
+																value="<%= product._id %>" <%=index===0 ? 'checked' : '' %>>
+															<label for="shippingOption<%= product._id %>">Select this
+																shipping option</label>
+														</div>
+
+
+													</div>
+
+													<% }); %>
+
+											</div>
+
+											
+											
+								</div>
+								<% } else { %>
+									<p>No shipping information available.</p>
+									<% } %>
+							</div>
+
+							<div class="add-address-button">
+								<a href="/orderAddress" class="btn action__add-address">Add Address</a>
+							</div>
+						</div>
+					</div>
+
+
+
+							<!-- Your Order Section -->
+							<div  class="col-md-6">
+								<div class="order-md-2">
+								<div class="row mb-5">
+									<div class="col-md-12">
+										<h2 class="h3 mb-3 text-black">Your Order</h2>
+										<div class="p-3 p-lg-5 " style="background-color: #ffffff;border: 1px solid rgb(255, 144, 16);">
+											<table class="table site-block-order-table mb-5">
+												<thead>
+													<th>Product</th>
+													<th>Total</th>
+												</thead>
+												<% checkout.forEach((product, index)=> { %>
+													<tbody>
+														
+														  <tr>
+															<td><%= product.productname %><strong class="mx-2">x</strong><%= product.quantity %></td>
+															<td>₹<%= product.price * product.quantity %></td>
+														  </tr>
+														
+														<!-- Display Tax in Checkout -->
+														
+														
+														
+													  </tbody>
+													  
+												<% }); %>
+												<tr>
+													<td colspan="3" class="text-black font-weight-bold"><strong>Tax:</strong></td>
+													<td>₹<%= totalTax.toFixed(2) %></td> 
+												  </tr>
+												<tfoot>
+													<tr>
+														<td colspan="3" class="text-black font-weight-bold"><strong>Order Total:</strong></td>
+														<td>₹<%= totalsum %></td>
+													</tr>
+												</tfoot>
+											</table>
+										</div>		
+									</div>
+								</div>
+								</div>
+							</div>
+					
+							<!-- Coupon Code Section -->
+							<!-- Coupon Code Section -->
+							
+<div class="coupon-container">
+    <div class="coupon-content">
+        <h2 class="coupon-title">Coupon Code</h2>
+        <label for="c_code" class="coupon-label">Enter your coupon code if you have one</label>
+        <div class="coupon-input-section">
+            <div class="input-group coupon-input-wrap">
+                <div class="coupon-input-box">
+                    <input id="coupencode" name="coupencode" type="text" class="coupon-input form-control" placeholder="Enter the code">
+                    <button id="applyCouponBtn" type="button" class="coupon-btn btn btn-info" onclick="applyCoupon(`<%= totalsum %>`)">Apply Now</button>
+                </div>
+	                <br>
+                <div class="coupon-values">
+					<h5 class="coupon-discount text-danger">Discount: ₹ <span id="discountValue">0.00</span></h5>
+					<h5 class="coupon-price">Price: <span id="total-price2"><%= totalsum %></span></h5>
+				</div>
+				
+            </div>
+			
+            <br>
+            <button id="deleteCouponBtn" class="coupon-remove-btn btn btn-danger" type="button" onclick="deleteCoupon()">Remove Coupon</button>
+            <a href="/allCoupons" id="availableCouponsLink">
+                <button class="coupon-available-btn btn btn-primary" type="button" id="availableCouponsButton">Available Coupons</button>
+            </a>
+			<div id="messageContainer" class="coupon-message" style="color: red;"></div>
+
+        </div>
+    </div>
+</div>
+
+<span id="price" data-totalprice="<%= totalsum %>"></span>
+					
+						<!-- Payment Method Section -->
+					<!-- Payment Method Section -->
+
+			
+
+
+
+<div class="row mb-5 d">
+    <div class="col-md-12 ">
+        <h2 class="h3 mb-3 text-black ">Payment Method</h2>
+        <div class="p-3 p-lg-5 "  style="background-color: #ffffff; border: 1px solid rgb(255, 144, 16);">
+         
+             
+			<div class="form-group">
+				<label for="paymentMethod">Payment Method:</label>
+				<select class="form-control" id="paymentMethod" name="paymentMethod" required>
+					<option value="" disabled selected>Choose a payment method</option>
+					<option value="Cash on Delivery">Cash on Delivery</option>
+					<option id="credit-card" value="Net Banking">Pay Online</option>
+				</select>
+			</div>
+			
+                <br>
+                <br>
+				<div class="form-group">
+                    <button type="submit" id="placeOrderButton" class="btn btn-black btn-lg py-3 btn-block" ">Place Order</button>
+                </div>
+            </form>
+            <button type="button" class="btn btn-black btn-lg py-3 btn-block" id="rzp-button1" style="display: none;">
+				Online Payment
+            </button>
+        </div>
+    </div>
+</div>
+	
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+   document.getElementById('paymentMethod').addEventListener('change', function() {
+    var paymentMethod = this.value;
+    var totalOrderPrice = parseFloat(document.getElementById('price').getAttribute('data-totalprice'));
+
+    // Check if the selected payment method is COD and the total order price is above Rs 1000
+    if (paymentMethod === 'Cash on Delivery' && totalOrderPrice > 1000) {
+        // Use SweetAlert2 to show the error message
+        Swal.fire({
+            icon: 'error',
+            title: 'Order Limit Exceeded',
+            text: 'Cash on Delivery is not available for orders above Rs 1000.',
+        });
+
+        this.value = ''; // Reset the selection
+        return;
+    }
+
+    // Existing logic for showing/hiding buttons based on payment method
+    if (paymentMethod === 'Net Banking') {
+        document.getElementById('rzp-button1').style.display = 'block';
+        document.getElementById('placeOrderButton').style.display = 'none';
+    } else {
+        document.getElementById('rzp-button1').style.display = 'none';
+        document.getElementById('placeOrderButton').style.display = 'block';
+    }
+});
+
+
+
+	let alreadyUsedCoupon = false;
+		let overallTotalPrice=0; 
+		async function applyCoupon(totalPrice) {
+
+			const messageContainer = document.getElementById('messageContainer');
+			if (alreadyUsedCoupon) {
+				messageContainer.textContent = 'Coupon already applied.';
+				return;
+			}
+			const coupencode = document.getElementsByName('coupencode')[0].value;
+			try {
+				console.log(coupencode, 'couponcode');
+				const response = await fetch('/coupencheck', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ coupencode }),
+				});
+				if (!response.ok) {
+					messageContainer.textContent = `Invalid entryss`;
+					setTimeout(() => {
+						messageContainer.textContent = ""
+					}, 2000);
+					return;
+				}
+				const data = await response.json();
+				if (data.success) {
+					if (data.success) {
+						console.log('inside sucess');
+						const discountValue = data.discount || 0;
+						const amountLimit = data.amount || 0;
+						overallTotalPrice = totalPrice - discountValue;
+						// Check if the total amount is greater than the discount
+						if (totalPrice > discountValue) {
+							if (totalPrice >= amountLimit) {
+								messageContainer.textContent = 'Coupon code entered Successfully.';
+								setTimeout(() => {
+									messageContainer.textContent = "";
+								}, 2000);
+								console.log('inside to if');
+								// overallTotalPrice = totalPrice - discountValue; // Update the global variable
+								console.log('overalltotalprice', overallTotalPrice);
+								document.getElementById('discountValue').textContent = discountValue.toFixed(2);
+								document.getElementById('total-price2').textContent = `₹${overallTotalPrice.toFixed(2)}`;
+								// document.getElementById('total-price3').textContent = ₹${overallTotalPrice.toFixed(2)};
+								alreadyUsedCoupon = true;
+								console.log('discount is',overallTotalPrice);
+							} else {
+								messageContainer.textContent = 'Your purchase amount is not greater than the coupon purchase amount. You are not eligible for this coupon.';
+								setTimeout(() => {
+									messageContainer.textContent = "";
+								}, 4000);
+							}
+						} else {
+							messageContainer.textContent = 'Coupon code is either expired or invalid: ' + data.message;
+							setTimeout(() => {
+								messageContainer.textContent = "";
+							}, 4000);
+						}
+					} else {
+						messageContainer.textContent = `Failed to apply coupon: `;
+						setTimeout(() => {
+							messageContainer.textContent = "";
+						}, 4000);
+						return;
+					}
+				}
+			} catch (error) {
+				messageContainer.textContent = ` Error applying coupon: ${error.message}`;
+				console.error('Error applying coupon:', error);
+			}
+		}
+
+
+
+	document.getElementById('rzp-button1').onclick = function (e) {
+		let price = document.getElementById('price')
+let orderprice = price.getAttribute('data-totalprice')
+console.log(orderprice,"this is the ordee rprice");
+console.log(overallTotalPrice,"discount price is");
+
+		$(document).ready(function () {
+console.log('ajx');
+var settings = {
+	"url": "/create/orderId",
+	"method": "POST",
+	"timeout": 0,
+	"headers": {
+		"Content-Type": "application/json"
+	},
+	"data": JSON.stringify({
+		"amount":  (overallTotalPrice || orderprice)
+	}),
+};
+
+//creates new orderId everytime
+$.ajax(settings).done(function (response) {
+	console.log('done');
+	orderId = response.orderId;
+	orderprice = response.orderprice; 
+	ordresignature = response.signature
+	$("#rzp-button1").show();
+}); 
+});
+
+
+
+	
+console.log(orderprice,"orderprice above the option");
+console.log(overallTotalPrice,"discount price from above the option");
+
+    var options = {
+        "key": "rzp_test_1krsf9QUdTfWiN",
+        "amount": overallTotalPrice || orderprice * 100, 
+        "currency": "INR",
+        "name": "SKS",
+        "description": "Online Payment",
+        "image": "",
+        "order_id": orderId,
+        "handler": function (response) {
+            // Create a form dynamically
+            var form = document.createElement('form');
+            form.method = 'post';
+            form.action = '/Checkoutpost';
+            // Create an input element to hold the payment ID
+            var paymentIdInput = document.createElement('input');
+            paymentIdInput.type = 'hidden';
+            paymentIdInput.name = 'razorpay_payment_id';
+            paymentIdInput.value = response.razorpay_payment_id;
+            // Add the input element to the form
+            form.appendChild(paymentIdInput);
+            // Add hidden input fields for payment mode and address details
+            var paymentModeInput = document.createElement('input');
+            paymentModeInput.type = 'hidden';
+            paymentModeInput.name = 'paymentMethod';
+            paymentModeInput.value = document.getElementById('paymentMethod').value;
+            form.appendChild(paymentModeInput);
+            coupencode.value = document.getElementById('coupencode').value;
+            form.appendChild(coupencode);
+            var selectedAddressInput = document.querySelector('input[name="shippingOption"]:checked');
+            if (selectedAddressInput) {
+                var addressIdInput = document.createElement('input');
+                addressIdInput.type = 'hidden';
+                addressIdInput.name = 'shippingOption';
+                addressIdInput.value = selectedAddressInput.value;
+                form.appendChild(addressIdInput);
+            }
+            // Append the form to the body
+            document.body.appendChild(form);
+            // Submit the form
+            form.submit();
+        }
+    };
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response) {
+	console.log("error data",response);
+console.log("got rnto error ");
+window.location.href = "/paymentFailed";
+return
+});
+rzp1.open();
+e.preventDefault();
+}
+
+
+
+
+function deleteCoupon() {
+  // Make an AJAX request to the server to delete the coupon
+  document.getElementById('coupencode').value = '';
+  fetch('/deleteCoupon', {
+    method: 'POST',
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alreadyUsedCoupon = false;
+
+      document.getElementById('discountValue').innerText = '0.00';
+      document.getElementById('total-price2').innerText = '<%= totalsum %>';
+      document.getElementById('messageContainer').innerText = 'Coupon deleted successfully.';
+
+      delete window.sessionStorage.coupon;
+      delete window.sessionStorage.coupencode;
+
+      // Reload the page
+      window.location.reload(); // This will reload the page
+    } else {
+      // Display an error message if deletion fails
+      document.getElementById('messageContainer').innerText = 'Failed to delete coupon.';
+
+      // Hide error message after 3 seconds
+      setTimeout(function() {
+        document.getElementById('messageContainer').innerText = '';
+      }, 3000); // 3000 milliseconds = 3 seconds
+    }
+  })
+  .catch(error => {
+    console.error('Error deleting coupon:', error);
+  });
+}
+
+	
+
+
+/////////////remove copuon 
+
+
+
+
+
+</script>
+
+
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="js/tiny-slider.js"></script>
+	<script src="js/custom.js"></script>
+
+
+</body>
+
+</html>

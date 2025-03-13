@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- DataTable HEADER-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+        }
+        
+        .sidebar h2 {
+            color: #fff;
+            text-align: center;
+        }
+        
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .sidebar ul li {
+            padding: 15px;
+        }
+        
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .sidebar ul li a:hover {
+            color: #ccc;
+        }
+        
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+        }
+        
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .user-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .user-item button {
+            cursor: pointer;
+        }
+        
+        /* Styling for table headings */
+        #example thead th {
+            background-color: #007bff; /* Blue */
+            color: #fff; /* White */
+        }
+        .cancel-btn {
+  background-color: #3dcf38; /* Coral color */
+  color: #fff; /* White text color */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #f54b08; /* Darker coral color on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow on hover */
+}
+
+      
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="/admin/dashboard">Dashboard</a></li>  
+            <li><a href="/admin/usermanagement">User Management</a></li>
+          <li><a href="/admin/categorymanagement">Category Management</a></li>
+          <li><a href="/productmanagement">Product Management</a></li>
+          <li><a href="/admin/orderManagement">Order Management</a></li>
+          <li><a href="/couponManagement">Coupon Management</a></li>
+          <li><a href="/sales">Sales</a></li>
+          <li><a href="/offerManagement">Offer Management</a></li>
+          <li><a href="/admin/Logoutget" id="logout-button">Logout</a></li>
+
+        </ul>
+    </div>
+<!-- Content area -->
+<div class="content">
+    <h1 style="text-align: center;">Product Offer</h1>  
+    <br>
+    <a href="/addProductOffer" class="btn btn-primary" id="addCouponButton">Add Product Offer</a>
+
+    <br>   
+    <br>   
+<table id="example" class="table table-striped" style="width:100%">
+    <thead>
+      <tr>
+        <th style="background-color:#3da3f6">No</th>
+        <th style="background-color:#3da3f6">Product Name</th>
+        <th style="background-color:#3da3f6">Price</th>
+        <th style="background-color:#3da3f6">Offer</th>
+       
+        <th style="background-color:#3da3f6">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (newproductOffer && newproductOffer.length > 0) { %>
+      <% newproductOffer.forEach((offer, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= offer.productname %></td>
+        <td><%= offer.price %></td>
+        <td><%= offer.productoffer %>%</td>
+        <td>
+          <a href="/deleteproductoffer/<%=offer.id%>" class="delete-button" style="border: 1px solid red; background-color: rgb(231, 33, 33); padding: 5px 10px; text-decoration: none; color: rgb(255, 253, 253);">Delete</a>
+          
+
+
+        </td>
+      </tr>
+      <% }); %>
+      <% } %>
+       
+    </tbody>
+  </table>   
+
+<br>
+<!-- Table for Top Selling Categories -->
+<div class="card shadow mb-4">
+<h1 style="text-align: center;">Category Offer</h1> 
+<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+<h6 class="m-0 font-weight-bold text-primary">
+  <a href="/addCategoryOffer" class="btn btn-primary" id="addCouponButton">Add CategoryOffer</a>
+</h6>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+  <table id="example" class="table table-striped" style="width:100%">
+
+    <thead>
+      <tr>        
+        <th style="background-color:#3da3f6">Category Name</th>
+        <th style="background-color:#3da3f6">Offer</th>
+        <th style="background-color:#3da3f6">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (categoryOffers && categoryOffers.length > 0) { %>
+        <% categoryOffers.forEach((categoryOffer) => { %>
+          <tr>
+            <td><%= categoryOffer.category %></td>
+            <td><%= categoryOffer.alloffer %>%</td>
+            <td>
+              <a href="/deletecategoryOffer/<%=categoryOffer.id%>" class="delete-button" style="border: 1px solid red; background-color: rgb(202, 37, 37); padding: 5px 10px; text-decoration: none; color: rgb(255, 253, 253);">Delete</a>
+            </td>
+          </tr>
+          <% }); %>
+        <% } %>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        });
+    </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    
+            // Wait for the document to be fully loaded
+            document.addEventListener("DOMContentLoaded", function () {
+                // Find the logout button element
+                const logoutButton = document.getElementById("logout-button");
+            
+                // Add a click event listener to the logout button
+                logoutButton.addEventListener("click", function (e) {
+                    // Prevent the default action (following the link)
+                    e.preventDefault();
+            
+                    // Show the SweetAlert confirmation dialog
+                    Swal.fire({
+                        title: "Logout",
+                        text: "Are you sure you want to logout?",
+                        icon: "warning",
+                        showCancelButton: true, 
+                        confirmButtonText: "Yes, logout",
+                        cancelButtonText: "No, cancel"
+                    }).then((result) => {
+                        // If the user confirms the logout
+                        if (result.isConfirmed) {
+                            // Redirect to the logout page
+                            window.location.href = "/admin/Logoutget";
+                        }
+                    });
+                });
+            });
+            
+</script>
+</body>
+</html>

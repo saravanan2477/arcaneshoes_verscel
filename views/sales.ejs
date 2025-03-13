@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- DataTable HEADER-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.min.css">
+    <!-- Add these in your HTML file -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+        }
+        
+        .sidebar h2 {
+            color: #fff;
+            text-align: center;
+        }
+        
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .sidebar ul li {
+            padding: 15px;
+        }
+        
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .sidebar ul li a:hover {
+            color: #ccc;
+        }
+        
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+        }
+        
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .user-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .user-item button {
+            cursor: pointer;
+        }
+        
+        /* Styling for table headings */
+        #categoryTable thead th {
+            background-color: #007bff; /* Blue */
+            color: #ffffff; /* White */
+        }
+      
+
+
+        .delete-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #ff0000; /* Red color for delete button, you can change it to your desired color */
+        color: #fff; /* Text color for the button */
+        text-decoration: none; /* Remove underline from the link */
+        border-radius: 4px; /* Optional: Adds rounded corners */
+    }
+
+    .delete-button:hover {
+        background-color: #cc0000; /* Darker red color on hover */
+    }
+    .report-options {
+    max-width: 400px; /* Adjust as needed */
+    margin: 0 auto; /* Center the box horizontally */
+    padding: 20px; /* Add some padding for spacing */
+    border: 1px solid #ccc; /* Add a border */
+    border-radius: 8px; /* Add rounded corners */
+}
+.date-label {
+    font-weight: bold;
+    color: #007bff; /* Blue color */
+}
+
+
+select {
+            width: 30%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+
+        .cool-button {
+    display: inline-block;
+    padding: 10px 10px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #007bff; /* Change to your preferred color */
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cool-button:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cool-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+    </style>
+</head>
+<body>
+    <% function formatDate(inputDate) { %>
+        <% const date = new Date(inputDate); %>
+        <% const day = String(date.getDate()).padStart(2, '0'); %>
+        <% const month = String(date.getMonth() + 1).padStart(2, '0'); %>
+        <% const year = String(date.getFullYear()).slice(-2); %>
+        <%= day %>-<%= month %>-<%= year %>
+    <% } %>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="/admin/dashboard">Dashboard</a></li>  
+            <li><a href="/admin/userManagement">User Management</a></li>
+            <li><a href="/admin/categoryManagement">Category Management</a></li>
+            <li><a href="/productManagement">Product Management</a></li>
+            <li><a href="/admin/orderManagement">Order Management</a></li>
+            <li><a href="/couponManagement">Coupon Management</a></li>
+            <li><a href="/sales">Sales</a></li>
+          <li><a href="/offerManagement">Offer Management</a></li>
+          <li><a href="/admin/Logoutget" id="logout-button">Logout</a></li>
+
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1 style="text-align: center;"> Sales Report </h1>  
+        <br>
+        <form action="/costomSales" method="post" onsubmit="return validateDates()">
+            <label for="start_date" class="date-label">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" >
+            <span id="start_date_error" class="error-message"></span>
+            <label for="end_date" class="date-label">End Date:</label>  
+            <input type="date" id="end_date" name="end_date" >
+            <span id="end_date_error" class="error-message"></span>
+            <button type="submit" style="background-color: #007bff; color: white;border-radius:12px;margin-left: 2px;border: 1px solid black;">Submit</button>
+
+            
+            <select id="reportType" onchange="filterOrders()">
+                <option value="">Select Time Frame</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+        </form>
+       
+        
+          
+        <br>
+        <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+          <tr>
+            <th style="background-color:#3da3f6">User Name</th>
+            <th style="background-color:#3da3f6">Product Name</th>
+           
+            <th style="background-color:#3da3f6">Quantity</th>
+            <th style="background-color:#3da3f6"> Prices</th>
+            <th style="background-color:#3da3f6">Total Prices</th>
+            <th style="background-color:#3da3f6">Order Date</th>
+            <th style="background-color:#3da3f6">Payment Method</th>
+            <th style="background-color:#3da3f6">Status</th>
+            <th style="background-color:#3da3f6">Details</th>
+
+          </tr>  
+        </thead>
+        <tbody>
+            <% orderdetalist.forEach((order, index) => { %>
+                <% order.productcollection.forEach((product, productIndex) => { %>
+                    <tr>
+                        <td data-label="User Name"><%= order.Username %></td>
+                        <td data-label="Product Name"><%= product.productName %></td>
+                       
+                        <td data-label="Quantity"><%= product.quantity %></td>
+                        <td data-label="Prices">₹<%= product.price %></td>
+                        <td data-label="Total Prices">₹<%= product.price * product.quantity %></td>
+                        <td data-label="Order Date"><%= formatDate(order.orderDate) %></td>
+                            
+                         
+                        <td data-label="Payment Method"><%= order.paymentMethod %></td>
+                        <td data-label="Status"><%= product.status %></td>
+                        <td data-label="Details">
+                            <a class="cool-button" href="/orderDetails/<%= order._id %>/<%= product.productid %>">VIEW</a>
+                        </td>
+                        
+                        
+
+                            
+                       
+                    </tr>
+                <% }); %>         
+            <% }); %>
+        </tbody>
+      </table>   
+      <div class="card-body">
+        <div class="chart-pie pt-4 pb-2">
+            <div class="report-options">
+              
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <button id="downloadExcel" class="btn btn-success">Download Excel</button>
+                    </div>
+                    <div class="col">
+                        <button id="downloadPDF" class="btn btn-success">Download PDF</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</div>
+
+ 
+  
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>
+<script>
+  new DataTable('#example');
+
+</script>  
+
+
+
+
+
+
+<script>
+    function validateDates() {
+        var startDateInput = document.getElementById("start_date");
+        var endDateInput = document.getElementById("end_date");
+        var startDate = new Date(startDateInput.value);
+        var endDate = new Date(endDateInput.value);
+        var currentDate = new Date();
+    
+        // Check if start date is greater than current date
+        if (startDate > currentDate) {
+            startDateInput.nextElementSibling.textContent = "cannot be in the future.";
+            startDateInput.nextElementSibling.style.color = "red"; // Set error message color to red
+            return false;
+        } else {
+            startDateInput.nextElementSibling.textContent = "";
+        }
+    
+        // Check if end date is less than current date
+        if (endDate < startDate) {
+            endDateInput.nextElementSibling.textContent = "cannot be in less than startDate.";
+            endDateInput.nextElementSibling.style.color = "red"; // Set error message color to red
+            return false;
+        } else {
+            endDateInput.nextElementSibling.textContent = "";
+        }
+    
+        // Check if start date is greater than end date
+        if (startDate > endDate) {
+            startDateInput.nextElementSibling.textContent = "Start date cannot be after end date.";
+            endDateInput.nextElementSibling.textContent = "End date cannot be before start date.";
+            startDateInput.nextElementSibling.style.color = "red"; // Set error message color to red
+            endDateInput.nextElementSibling.style.color = "red"; // Set error message color to red
+            return false;
+        } else {
+            startDateInput.nextElementSibling.textContent = "";
+            endDateInput.nextElementSibling.textContent = "";
+        }
+    
+        return true;
+    }
+</script>
+
+<script>
+    function filterOrders() {
+        const reportType = document.getElementById('reportType').value;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/salesfilter?type=${reportType}`, true);
+        xhr.send();
+        xhr.onload = function() {
+            if (xhr.status !== 200) {
+                alert(`Error ${xhr.status}: ${xhr.statusText}`);
+            } else {
+                const orders = JSON.parse(xhr.responseText);
+                updateTable(orders);
+            }
+        };
+        xhr.onerror = function() {
+            alert("Request failed");
+        };
+    }
+
+    function updateTable(orders) {
+        const tbody = document.querySelector('#example tbody');
+        tbody.innerHTML = '';
+        orders.forEach(order => {
+            order.productcollection.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="User Name">${order.Username}</td>
+                    <td data-label="Product Name">${product.productName}</td>
+                    <td data-label="Quantity">${product.quantity}</td>
+                    <td data-label="Prices">₹${product.price}</td>
+                    <td data-label="Total Prices">₹${product.price * product.quantity}</td>
+                    <td data-label="Order Date">${new Date(order.orderDate).toLocaleDateString()}</td>
+                    <td data-label="Payment Method">${order.paymentMethod}</td>
+                    <td data-label="Status">${product.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+
+    document.getElementById('downloadExcel').addEventListener('click', function() {
+        const table = document.querySelector('#example');
+        const clone = table.cloneNode(true);
+        // Remove the last column (Details) from the cloned table
+        clone.querySelectorAll('tr').forEach(row => {
+            row.removeChild(row.lastElementChild);
+        });
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.table_to_sheet(clone);
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.writeFile(wb, 'Orders.xlsx');
+    });
+
+    document.getElementById('downloadPDF').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const table = document.querySelector('#example');
+        const headers = [];
+        const data = [];
+
+        // Extract headers
+        table.querySelectorAll('thead th').forEach((th, index) => {
+            if (index < table.querySelectorAll('thead th').length - 1) { // Skip last column
+                headers.push(th.textContent);
+            }
+        });
+
+        // Extract data rows
+        table.querySelectorAll('tbody tr').forEach(tr => {
+            const row = [];
+            tr.querySelectorAll('td').forEach((td, index) => {
+                if (index < tr.querySelectorAll('td').length - 1) { // Skip last column
+                    row.push(td.textContent);
+                }
+            });
+            data.push(row);
+        });
+
+        doc.autoTable({
+            head: [headers],
+            body: data,
+            margin: { top: 20 },
+            theme: 'grid',
+            headStyles: {
+                fillColor: [41, 128, 186], // Head background color
+                textColor: [255, 255, 255], // Head text color
+            },
+            styles: {
+                columnWidth: 23, // 'auto', 'wrap', 'fixed', or a number
+                halign: 'left', // left, center, right
+                valign: 'middle', // top, middle, bottom
+            }
+        });
+
+        doc.save('Orders.pdf');
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    
+            // Wait for the document to be fully loaded
+            document.addEventListener("DOMContentLoaded", function () {
+                // Find the logout button element
+                const logoutButton = document.getElementById("logout-button");
+            
+                // Add a click event listener to the logout button
+                logoutButton.addEventListener("click", function (e) {
+                    // Prevent the default action (following the link)
+                    e.preventDefault();
+            
+                    // Show the SweetAlert confirmation dialog
+                    Swal.fire({
+                        title: "Logout",
+                        text: "Are you sure you want to logout?",
+                        icon: "warning",
+                        showCancelButton: true, 
+                        confirmButtonText: "Yes, logout",
+                        cancelButtonText: "No, cancel"
+                    }).then((result) => {
+                        // If the user confirms the logout
+                        if (result.isConfirmed) {
+                            // Redirect to the logout page
+                            window.location.href = "/admin/Logoutget";
+                        }
+                    });
+                });
+            });
+            
+</script>
+</body>
+</html>
