@@ -82,115 +82,119 @@ console.log("checkout is ", checkout);
   },
 
  
-
   postcheckout: async (req, res) => {
     console.log("here the post req", req.body);
     try {
-      const { shippingOption, paymentMethod } = req.body;
-      const userId = req.session.userid;
-      const currentdate = new Date();
+        const { shippingOption, paymentMethod } = req.body;
+        const userId = req.session.userid;
+        const currentdate = new Date();
 
-      // Fetch user details like username, you may need to adjust this based on your user model
-      const user = await UserCollection.findById(userId);
-
-      // Fetch the selected address
-      const address = await Address.findById(shippingOption);
-
-      // Fetch items from the cart for the current session user
-      const cartItems = await Cart.find({ userid: userId });
-      console.log("CartItems", cartItems);
-      // Calculate total price
-      let totalPrice = 0;
-      cartItems.forEach((item) => {
-        totalPrice += item.price * item.quantity;
-      });
-
-     
-
-
-      // Construct order object
-      const orderProducts = cartItems.map((item) => ({
-        productid: item.productid,
-        productName: item.productname,
-        Category: item.Category,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image,
-        status: "pending",
-        proffer:item.proffer*item.quantity
-      }));
-      let product;
-      // Update stock for each product in the order
-      console.log("size", orderProducts);
-      for (const item of orderProducts) {
-        console.log("here the for of loop");
-        product = await Product.findById(item.productid);
-        if (!product) {
-          return res
-            .status(404)
-            .send(`Product with ID ${item.productid} not found.`);
+        // Fetch user details
+        const user = await UserCollection.findById(userId);
+        if (!user) {
+            return res.status(404).send("User not found.");
         }
-        // Reduce the stock by the quantity ordered
-        product.stock -= item.quantity;
-      }
 
+        // Fetch the selected address
+        const address = await Address.findById(shippingOption);
+        if (!address) {
+            return res.status(404).send("Shipping address not found.");
+        }
 
-      const couponcode = req.body.coupencode;
-      let discount = 0;
-      const coupon = await couponCollection.findOne({ coupencode: couponcode });
+        // Fetch items from the cart
+        const cartItems = await Cart.find({ userid: userId });
+        if (!cartItems.length) {
+            return res.status(400).send("Cart is empty.");
+        }
 
-      if (coupon) {
-          console.log('coupon id ', coupon._id);
-          discount = coupon.discount;
-          console.log("Discount: ", discount);
-      } else {
-          console.log('Coupon not found');
-          // handle the case when the coupon is not found
-      }
+        console.log("CartItems", cartItems);
 
-      const intDiscount = discount / orderProducts.length;
-      console.log("Discount: ", discount);
-      console.log("intDiscount isssss: ", orderProducts.length);
-      
+        // Calculate total price
+        let totalPrice = 0;
+        cartItems.forEach((item) => {
+            totalPrice += item.price * item.quantity;
+        });
 
+        // Construct order products
+        const orderProducts = [];
+        
+        for (const item of cartItems) {
+            console.log("Processing product ID:", item.productid);
 
-      await product.save();
-      // Construct order object
-      const order = new Ordercollection({
-        userid: userId,
-        Username: user.username,
-        productcollection: orderProducts,
-        addresscollection: {
-          firstname: address.firstname,
-          lastname: address.lastname,
-          address: address.address,
-          city: address.city,
-          pincode: address.pincode,
-          state: address.state,
-          phone: address.phone,
-          email: address.email,
-        },
-        paymentMethod: paymentMethod,
-        totalPrice: totalPrice,
-        orderDate: currentdate,
-        Discount: discount,
-        intDiscount: intDiscount,
-      });
+            const product = await Product.findById(item.productid);
+            if (!product) {
+                console.log(`Product not found: ${item.productid}`);
+                return res.status(404).send(`Product with ID ${item.productid} not found.`);
+            }
 
-      // Save the order to the database
-      await order.save();
-      console.log("entered save ");
+            // Reduce the stock
+            product.stock -= item.quantity;
+            await product.save(); // Save each product after updating stock
 
-      // Clear the user's cart
-      await Cart.deleteMany({ userid: userId });
+            orderProducts.push({
+                productid: item.productid,
+                productName: item.productname,
+                Category: item.Category,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image,
+                status: "pending",
+                proffer: item.proffer * item.quantity,
+            });
+        }
 
-      // Redirect to a thank you page or any other appropriate page
-      res.redirect("/placeOrder");
+        // Handle coupon discount
+        const couponcode = req.body.coupencode;
+        let discount = 0;
+        const coupon = await couponCollection.findOne({ coupencode: couponcode });
+
+        if (coupon) {
+            console.log('Coupon found:', coupon._id);
+            discount = coupon.discount;
+        } else {
+            console.log('Coupon not found');
+        }
+
+        const intDiscount = discount / orderProducts.length;
+
+        // Create order object
+        const order = new Ordercollection({
+            userid: userId,
+            Username: user.username,
+            productcollection: orderProducts,
+            addresscollection: {
+                firstname: address.firstname,
+                lastname: address.lastname,
+                address: address.address,
+                city: address.city,
+                pincode: address.pincode,
+                state: address.state,
+                phone: address.phone,
+                email: address.email,
+            },
+            paymentMethod: paymentMethod,
+            totalPrice: totalPrice,
+            orderDate: currentdate,
+            Discount: discount,
+            intDiscount: intDiscount,
+        });
+
+        // Save the order
+        await order.save();
+        console.log("Order saved successfully.");
+
+        // Clear the user's cart
+        await Cart.deleteMany({ userid: userId });
+
+        // Redirect to order confirmation page
+        res.redirect("/placeOrder");
+
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Error placing order");
+        console.error(error);
+        res.status(500).send("Error placing order");
     }
-  },
+}
+,
 
 
   addAddresscheckout: async (req, res) => {
@@ -258,9 +262,29 @@ console.log("checkout is ", checkout);
                 const productid = product.productid;
 
                 // Fetch original price of the product
-                let originalPrice = await Product.findById(productid).select("price");
-                console.log("originalPrice", originalPrice);
-                originalPrice = originalPrice.price;
+                // let originalPrice = await Product.findById(productid).select("price");
+                // console.log("originalPrice", originalPrice);
+                // originalPrice = originalPrice.price;
+
+                // Fetch original price of the product
+let productObject = await Product.findById(productid).select("price");
+
+for (let j = 0; j < order.productcollection.length; j++) {
+  const product = order.productcollection[j];
+  const productid = product.productid;
+
+  let productObject = await Product.findById(productid).select("price");
+
+  if (!productObject) {
+      console.log(`Warning: Product not found for productid: ${productid}`);
+      continue; // Skip this product and move to the next one
+  }
+
+  
+}
+
+let originalPrice = productObject.price;
+
 
                 // Retrieve product offer
                 const productOfferInstance = await ProductOffer.findOne({ productname: product.productName });
